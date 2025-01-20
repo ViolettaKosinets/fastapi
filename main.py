@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -34,6 +35,29 @@ def get_film(film_id: int) -> dict:
         if film['id'] == film_id:
             return film
     raise HTTPException(status_code=404, detail='Фильм не найден')
+
+
+class NewFilm(BaseModel):
+    name: str
+    issue_year: int
+    genre: str
+    country: str
+    director: str
+
+
+@app.post('/films', tags=['Фильмы'], summary='Add new film to books list')
+def add_film(film: NewFilm):
+    films.append(
+        {
+            'id': films[-1]['id'] + 1,
+            'name': film.name,
+            'issue_year': film.issue_year,
+            'genre': film.genre,
+            'country': film.country,
+            'director': film.director
+        }
+    )
+    return {'post_status': True, 'message': 'Фильм добавлен'}
 
 
 @app.get("/", summary='Home screen', tags=['default hands'])
