@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 app = FastAPI()
 
@@ -37,16 +37,18 @@ def get_film(film_id: int) -> dict:
     raise HTTPException(status_code=404, detail='Фильм не найден')
 
 
-class NewFilm(BaseModel):
-    name: str
-    issue_year: int
-    genre: str
-    country: str
+class FilmSchema(BaseModel):
+    name: str = Field(max_length=100)
+    issue_year: int = Field(ge=1895, le=2025)
+    genre: str | tuple[str]
+    country: str = Field(max_length=20)
     director: str
+
+    model_config = ConfigDict(extra='forbid')
 
 
 @app.post('/films', tags=['Фильмы'], summary='Add new film to books list')
-def add_film(film: NewFilm):
+def add_film(film: FilmSchema):
     films.append(
         {
             'id': films[-1]['id'] + 1,
