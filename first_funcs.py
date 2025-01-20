@@ -68,4 +68,4 @@ def first_func() -> str:
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("first_funcs:app", reload=True)
